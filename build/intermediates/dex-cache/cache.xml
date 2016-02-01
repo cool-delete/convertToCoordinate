@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
+        <dex dex="E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\pre-dexed\debug\classes-11cda33aaaa001ca26152bedc136918b3dbc4f4a.jar" />
+    </item>
+    <item
+        jar="D:\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.1\support-annotations-23.0.1.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
+        <dex dex="E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\pre-dexed\debug\support-annotations-23.0.1-c03c280dd21af7abff05a00ee344f58262eaf55a.jar" />
+    </item>
+    <item
+        jar="E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\libs\internal_impl-23.0.1.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="aa92916125166649d8ad4ba3940c3dd7515596d3">
+        <dex dex="E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\pre-dexed\debug\internal_impl-23.0.1-d04159f3d9822f51a6244d89998c74141d47f30d.jar" />
+    </item>
+    <item
+        jar="E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
+        <dex dex="E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\pre-dexed\debug\classes-d5587173e9945ae439979b1f00b5cf5555d22634.jar" />
+    </item>
+
+</items>

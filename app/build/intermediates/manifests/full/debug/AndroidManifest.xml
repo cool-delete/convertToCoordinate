@@ -25,6 +25,13 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name="lovejazzie.convertToCoordinate.convert"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":ture" >
+        </service>
+
         <receiver
             android:name="lovejazzie.convertToCoordinate.MyReceiver"
             android:enabled="true"

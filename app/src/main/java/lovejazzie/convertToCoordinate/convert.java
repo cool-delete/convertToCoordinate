@@ -1,5 +1,6 @@
 package lovejazzie.convertToCoordinate;
 
+import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,8 +9,11 @@ import android.database.Cursor;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import java.io.File;
@@ -21,7 +25,7 @@ import static java.lang.Thread.sleep;
 /**
  * Created by Administrator on 2016/1/30.
  */
-public class convert implements Runnable {
+public class convert extends Service implements Runnable {
 
     double pi = 3.14159265358979324;
     double a = 6378245.0;
@@ -33,11 +37,13 @@ public class convert implements Runnable {
     Intent intentFile;
     static int cout = 0;
 
-    public convert(String path, Context context) {//主窗口传回来
+    public convert() {
+    }
+    public convert(String path, Context context1) {//主窗口传回来
         //path是文件夹
         File file = new File(path);
         files = file.listFiles();
-        context = context;
+        context = context1;
     }
 
     //    private volatile static convert convert;
@@ -146,15 +152,24 @@ public class convert implements Runnable {
 
         }
         System.out.println("trueorfalse经纬度: " + is);
-        Looper.prepare();
-        Toast.makeText(context, is
-                ? count > 0
-                ? count > 10
-                ? "哇 好有趣 好像去了很多好玩的地方,已经帮你转换了" + count + "张相片了," +
-                "等一下google地图会帮你生成时光轴"
-                : "嗯嗯,已经完成了" + count + "张图片的转换,可以去google地图查看时光轴"
-                : "不好意思,没有权限在此目录下修改经纬度 还是换成内部储存的目录吧"
-                : "现在这个文件夹找不到有位置记录的照片,以后拍照可以试下记录位置,google地图会生成时间轴的", Toast.LENGTH_LONG).show();
+                Looper.prepare();
+        final boolean finalIs = is;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                                     @Override
+                                                     public void run() {
+                                                         Toast.makeText(context, finalIs
+                                                                 ? count > 0
+                                                                 ? count > 10
+                                                                 ? "哇 好有趣 好像去了很多好玩的地方,已经帮你转换了" + count + "张相片了," +
+                                                                 "等一下google地图会帮你生成时光轴"
+                                                                 : "嗯嗯,已经完成了" + count + "张图片的转换,可以去google地图查看时光轴"
+                                                                 : "不好意思,没有权限在此目录下修改经纬度 还是换成内部储存的目录吧"
+                                                                 : "现在这个文件夹找不到有位置记录的照片,以后拍照可以试下记录位置,google地图会生成时间轴的", Toast.LENGTH_LONG).show();
+                                                     }
+                                                 }
+        );
+
+
         Looper.loop();
 
     }
@@ -286,13 +301,13 @@ public class convert implements Runnable {
     @Override
     public void run() {
         convert.cout++;
-        //                cout++;
+        //                count++;
         if (cout < 2) {
 
-            //            System.out.println("目前全局数字" + convert.cout);
-            //            System.out.println("目前数字" + cout);
+            //            System.out.println("目前全局数字" + convert.count);
+            //            System.out.println("目前数字" + count);
             try {
-                sleep(30000);
+                sleep(3000);
                 cout = 0;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -312,54 +327,15 @@ public class convert implements Runnable {
             intentFile = null;
         }
     }
-    //    @Nullable
-    ////    @Override
-    //    public IBinder onBind(Intent intent) {
-    //        return new IBinder() {
-    //            @Override
-    //            public String getInterfaceDescriptor() throws RemoteException {
-    //                return null;
-    //            }
-    //
-    //            @Override
-    //            public boolean pingBinder() {
-    //                return false;
-    //            }
-    //
-    //            @Override
-    //            public boolean isBinderAlive() {
-    //                return false;
-    //            }
-    //
-    //            @Override
-    //            public IInterface queryLocalInterface(String descriptor) {
-    //                return null;
-    //            }
-    //
-    //            @Override
-    //            public void dump(FileDescriptor fd, String[] args) throws RemoteException {
-    //
-    //            }
-    //
-    //            @Override
-    //            public void dumpAsync(FileDescriptor fd, String[] args) throws RemoteException {
-    //
-    //            }
-    //
-    //            @Override
-    //            public boolean transact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-    //                return false;
-    //            }
-    //
-    //            @Override
-    //            public void linkToDeath(DeathRecipient recipient, int flags) throws RemoteException {
-    //
-    //            }
-    //
-    //            @Override
-    //            public boolean unlinkToDeath(DeathRecipient recipient, int flags) {
-    //                return false;
-    //            }
-    //        };
-    //    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return Service.START_STICKY;
+    }
 }

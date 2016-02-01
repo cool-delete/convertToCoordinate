@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 manifest
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:2:1-34:12
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:2:1-39:12
 	package
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:2:11-51
 		INJECTED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml
@@ -22,7 +22,7 @@ ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManif
 	android:name
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:6:22-77
 application
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:8:5-32:19
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:8:5-37:19
 MERGED from [com.android.support:appcompat-v7:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\AndroidManifest.xml:22:5-20
 MERGED from [com.android.support:support-v4:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\AndroidManifest.xml:22:5-20
 	android:label
@@ -49,28 +49,38 @@ category#android.intent.category.LAUNCHER
 ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:18:17-76
 	android:name
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:18:27-74
-receiver#lovejazzie.convertToCoordinate.MyReceiver
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:22:9-31:20
+service#lovejazzie.convertToCoordinate.convert
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:21:1-26:11
 	android:enabled
-		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:24:13-35
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:22:5-27
+	android:process
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:23:10-33
 	android:exported
-		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:25:13-36
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:24:5-29
 	android:name
-		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:23:13-39
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:21:10-33
+receiver#lovejazzie.convertToCoordinate.MyReceiver
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:27:9-36:20
+	android:enabled
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:29:13-35
+	android:exported
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:30:13-36
+	android:name
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:28:13-39
 intent-filter#android.hardware.action.NEW_PICTURE+com.android.camera.NEW_PICTURE
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:26:13-30:29
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:31:13-35:29
 action#android.hardware.action.NEW_PICTURE
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:27:17-77
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:32:17-77
 	android:name
-		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:27:25-75
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:32:25-75
 action#com.android.camera.NEW_PICTURE
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:28:17-72
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:33:17-72
 	android:name
-		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:28:25-70
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:33:25-70
 data
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:29:17-52
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:34:17-52
 	android:mimeType
-		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:29:23-49
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:34:23-49
 uses-sdk
 INJECTED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 MERGED from [com.android.support:appcompat-v7:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\AndroidManifest.xml:20:5-43

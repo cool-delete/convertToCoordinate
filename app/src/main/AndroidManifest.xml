@@ -18,7 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+<service android:name=".convert"
+    android:enabled="true"
+         android:process=":ture"
+    android:exported="false">
 
+</service>
         <receiver
             android:name=".MyReceiver"
             android:enabled="true"

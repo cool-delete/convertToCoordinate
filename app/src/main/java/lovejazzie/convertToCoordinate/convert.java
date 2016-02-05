@@ -204,20 +204,15 @@ public class convert extends Service implements Runnable {
             //File filess=new File(fa,fa.getName());//"[GCJ火星]"+
             System.out.println(b ? "改名成功" : "改名失败");
             //System.out.println(filess.getName());
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             ContentValues contentValues = new ContentValues();
             contentValues.put(MediaStore.Images.Media.LONGITUDE, loc[1]);
             contentValues.put(MediaStore.Images.Media.LATITUDE, loc[0]);
 
-            contentValues.put(MediaStore.Images.Media.DATA, " " + new_path);//miui系统数据库设定data是主键 不可更换?
+            contentValues.put(MediaStore.Images.Media.DATA,  new_path);//miui系统数据库设定data是主键 不可更换?
+            double i = context.getContentResolver().update(data, contentValues, null, null);
+            data = null;
             if (b) {
-                double i = context.getContentResolver().update(data, contentValues, null, null);
                 //                context.getContentResolver().insert(data, contentValues);
-                data = null;
                 System.out.println("返回的数字是 " + i);
                 System.out.println("目前图片名字是:" + fa.getName());
             }

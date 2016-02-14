@@ -13,7 +13,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
     EditText editText;
-    String TAG = "lovejazzie.convertToCoordinate";
+    public static final String TAG = "convertToCoordinate";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "天啊 这个路径有" + run + "个文件夹", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        System.out.println("怎么了");
                         convert convert = new convert(root, MainActivity.this);
                         new Thread(convert).start();
 

@@ -1,7 +1,6 @@
 package lovejazzie.convertToCoordinate;
 
 import android.app.Service;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +13,14 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.socks.library.KLog;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-
-import static java.lang.Thread.sleep;
 
 /**
  * Created by Administrator on 2016/1/30.
@@ -37,10 +37,9 @@ public class convert extends Service implements Runnable {
     Intent intentFile;
     static int cout = 0;
 
-    public convert() {
-    }
     public convert(String path, Context context1) {//主窗口传回来
-        //path是文件夹
+        //path是文件夹l
+        Log.d(MainActivity.TAG, "构造函数" + path);
         File file = new File(path);
         files = file.listFiles();
         context = context1;
@@ -65,10 +64,10 @@ public class convert extends Service implements Runnable {
 
     //    public static convert getconvet(Intent intent, Context context1context) {
     //        if (convert == null) {
-    //            System.out.println("进来第一次");
+    //             KLog.d("进来第一次");
     //            synchronized (lovejazzie.convertToCoordinate.convert.class) {
     //                if (convert == null) {
-    //                    System.out.println("进来第二次");
+    //                     KLog.d("进来第二次");
     //                    convert = new convert(intent, context1context);
     //                    return convert;
     //                }
@@ -83,17 +82,14 @@ public class convert extends Service implements Runnable {
     public String analyze() {
         data = intentFile.getData();
         intentFile = null;
-        String scheme = data.getScheme();
-        System.out.println(scheme);
-        System.out.println(data.getPath());
-        System.out.println(ContentResolver.SCHEME_FILE);
+        //        KLog.d(ContentResolver.SCHEME_FILE);
         String[] strings = {MediaStore.Images.Media.DATA};
-        System.out.println(Arrays.toString(strings));
+        KLog.d("默认数组" + Arrays.toString(strings));
         Cursor cursor = context.getContentResolver().query(data, strings, null, null, null);
         if (cursor.moveToFirst()) {
             double columnIndexOrThrow = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             String cursorString = cursor.getString((int) columnIndexOrThrow);
-            System.out.println(cursorString);
+            KLog.d("选择显示" + cursorString);
             cursor.close();
             return cursorString;
         }
@@ -103,15 +99,15 @@ public class convert extends Service implements Runnable {
 
     void convertImg(File[] listImg) {
         boolean is = false;
+        KLog.d("开始转换");
         for (File fa : listImg) {
 
+            KLog.d("相片名字是:" + fa.getName());
 
-            //System.out.println("相片名字是:" + fa.getName());
             //String p=fa.getName();
-            //System.out.println("用equals判断相片名字是否包含[GCJ火星] :" +
-            //        p.indexOf("[GCJ火星]"));
             if (!fa.getName().contains("GCJ")) {
                 //已经改成GCJ
+                KLog.d("用equals判断相片名字是否包含[GCJ火星] :");
                 ExifInterface exif = null;
                 try {
                     exif = new ExifInterface(fa.getPath());
@@ -121,11 +117,11 @@ public class convert extends Service implements Runnable {
 
                 String lat = null;
                 String lng = null;
-                //                System.out.println("打印看看"+exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
+                KLog.d("打印看看" + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
                 if (exif != null) {
                     lng = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
                     lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-                    //                    System.out.println(lat);
+                    //                     KLog.d(lat);
                 }
 
 
@@ -151,7 +147,7 @@ public class convert extends Service implements Runnable {
 
 
         }
-        System.out.println("trueorfalse经纬度: " + is);
+        KLog.d("trueorfalse经纬度: " + is);
                 Looper.prepare();
         final boolean finalIs = is;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -177,51 +173,56 @@ public class convert extends Service implements Runnable {
 
     private boolean imgConvertToGCJ(File fa, String lat, String lng, ExifInterface exif) throws IOException {
         boolean b = false;
-        System.out.println("对比文件名 如果已经修改 就忽略" + ((String) fa.getPath()).contains("GCJ"));
+        KLog.d("对比文件名 如果已经修改 就忽略" +  fa.getPath().contains("GCJ"));
+        //命名随随机化
         String old_path = fa.getParentFile() + "/" + fa.getName();
         String new_path = fa.getParentFile() + "/" + "#GCJ"
-                + "[" + convertToDouble(lat) + "," + convertToDouble(lng) + "]" + fa.getName();
-        String new_name = "#GCJ" + "[" + convertToDouble(lat) + "," + convertToDouble(lng) + "]" + fa.getName();
+                + "[" + convertToDouble(lat) + "," + convertToDouble(lng) + "]" + System.currentTimeMillis()+".JPG";
         String ss = convertToDouble(lat) + "纬度"
                 + convertToDouble(lng) + "经度";
         double loc[] = transform(convertToDouble(lat), convertToDouble(lng));
         String GCJ_lat = convertTOString(loc[0]);
         String GCJ_lng = convertTOString(loc[1]);
-        System.out.println("写入经纬度");
         exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, GCJ_lat);
         exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, GCJ_lng);
-        System.out.println("保存ing");
         if (!("".equals(fa.getPath()))) {
             exif.saveAttributes();
-            System.out.println("源坐标是 " + ss + "真实输出是:" + lat + " , " + lng + "\n"
+            KLog.d("源坐标是 " + ss + "真实输出是:" + lat + " , " + lng + "\n"
                     + "已转成GCJ" + "\n"
                     + "纬度 " + convertToDouble(GCJ_lat) + "" + "经度 " + convertToDouble(GCJ_lng) + "\n"
                     + "文件名是:" + old_path + "\n"
                     + "将要改变为:" + new_path);
 
-            System.out.println("目前图片名字是:" + fa.getName());
+            KLog.d("目前图片名字是:" + fa.getName());
             b = fa.renameTo(new File(new_path));
-            //File filess=new File(fa,fa.getName());//"[GCJ火星]"+
-            System.out.println(b ? "改名成功" : "改名失败");
-            //System.out.println(filess.getName());
+            KLog.d(b ? "改名成功" : "改名失败");
+
             ContentValues contentValues = new ContentValues();
             contentValues.put(MediaStore.Images.Media.LONGITUDE, loc[1]);
             contentValues.put(MediaStore.Images.Media.LATITUDE, loc[0]);
 
             contentValues.put(MediaStore.Images.Media.DATA,  new_path);//miui系统数据库设定data是主键 不可更换?
-            double i = context.getContentResolver().update(data, contentValues, null, null);
-            data = null;
             if (b) {
-                //                context.getContentResolver().insert(data, contentValues);
-                System.out.println("返回的数字是 " + i);
-                System.out.println("目前图片名字是:" + fa.getName());
+                if (data == null) {
+                    data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    Cursor query = context.getContentResolver().query(data, new String[]{MediaStore.Images.Media._ID},
+                            MediaStore.Images.Media.DATA + "=?", new String[]{fa.getPath()}, null);
+                    query.moveToFirst();
+                    String idString = query.getString(query.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+                    data = Uri.parse("content://media/external/images/media/" + idString);
+                    query.close();
+
+                    KLog.d("目前图片名字是:" + fa.getName());
             }
+                context.getContentResolver().update(data, contentValues, null, null);
+            }
+            data = null;
             return b;
         }
         return b;
     }
     //double[] transform = transform(23.125601, 113.365145);
-    //System.out.println(transform[0]+"纬度"+transform[1]+"经度");
+    // KLog.d(transform[0]+"纬度"+transform[1]+"经度");
 
 
     private double convertToDouble(String s) {
@@ -299,27 +300,20 @@ public class convert extends Service implements Runnable {
         //                count++;
         if (cout < 2) {
 
-            //            System.out.println("目前全局数字" + convert.count);
-            //            System.out.println("目前数字" + count);
-            try {
-                sleep(3000);
-                cout = 0;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("执行了" + convert.cout);
             if (intentFile != null) {
                 String analyzed = analyze();//一个文件
                 if (analyzed != null) {
 
                     convertImg(new File[]{new File(analyzed)});
-                    System.out.println("执行了" + convert.cout);
                 }
             }
-            if (files != null)
+            if (files != null) {
+
                 convertImg(files);
+            }
+
             //        convert = null;
-            intentFile = null;
+            files = null;
         }
     }
 

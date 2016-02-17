@@ -27,15 +27,28 @@ import java.util.Arrays;
  */
 public class convert extends Service implements Runnable {
 
-    double pi = 3.14159265358979324;
-    double a = 6378245.0;
-    double ee = 0.00669342162296594323;
+    private double pi = 3.14159265358979324;
+    private double a = 6378245.0;
+    private double ee = 0.00669342162296594323;
     private int count;
-    Context context;
-    File[] files;
-    Uri data;
-    Intent intentFile;
-    static int cout = 0;
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public void setFiles(File[] files) {
+        this.files = files;
+    }
+
+    public void setIntentFile(Intent intentFile) {
+        this.intentFile = intentFile;
+    }
+
+    private Context context;
+    private File[] files;
+    private Uri data;
+    private Intent intentFile;
+    private static int cout = 0;
 
     public convert(String path, Context context1) {//主窗口传回来
         //path是文件夹l
@@ -47,6 +60,9 @@ public class convert extends Service implements Runnable {
 
     //    private volatile static convert convert;
 
+
+    public convert() {
+    }
 
     public convert(Intent intent, Context context1) {
         intentFile = intent;
@@ -196,7 +212,7 @@ public class convert extends Service implements Runnable {
             KLog.d("目前图片名字是:" + fa.getName());
             b = fa.renameTo(new File(new_path));
             KLog.d(b ? "改名成功" : "改名失败");
-
+            // TODO: 2016/2/18 改名之后在windows直接打开手机内部存储的相片提示已损坏 copy到本地后才能打开
             ContentValues contentValues = new ContentValues();
             contentValues.put(MediaStore.Images.Media.LONGITUDE, loc[1]);
             contentValues.put(MediaStore.Images.Media.LATITUDE, loc[0]);
@@ -297,7 +313,6 @@ public class convert extends Service implements Runnable {
     @Override
     public void run() {
         convert.cout++;
-        //                count++;
         if (cout < 2) {
 
             if (intentFile != null) {
@@ -313,6 +328,7 @@ public class convert extends Service implements Runnable {
             }
 
             //        convert = null;
+            count = 0;
             files = null;
         }
     }

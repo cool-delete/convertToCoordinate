@@ -20,8 +20,7 @@ public class FileAdapter extends ArrayAdapter<File> {
     public FileAdapter(Context context, int resource, List<File> objects) {
         super(context, resource, objects);
         this.resource = resource;
-    }
-
+    }//
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         File file = getItem(position);

@@ -221,6 +221,14 @@
     <!-- From: file:/E:/Android/TextProjects/convertToCoordinate/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.1/res/values/values.xml -->
     <eat-comment/>
     <string name="status_bar_notification_info_overflow">999+</string>
+    <!-- From: file:/E:/Android/TextProjects/convertToCoordinate/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="文件名">文件名字</string>
+    <string name="点击按钮选择">点击按钮选择</string>
+    <string name="目录">当前目录：　</string>
+    <string name="确定">确定</string>
+    <!-- From: file:/E:/Android/TextProjects/convertToCoordinate/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.1/res/values/values.xml -->
+    <eat-comment/>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
     <style name="AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat.Light"/>
     <style name="Animation.AppCompat.Dialog" parent="Base.Animation.AppCompat.Dialog"/>

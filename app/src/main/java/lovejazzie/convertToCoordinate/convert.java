@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.socks.library.KLog;
@@ -52,7 +51,6 @@ public class convert extends Service implements Runnable {
 
     public convert(String path, Context context1) {//主窗口传回来
         //path是文件夹l
-        Log.d(MainActivity.TAG, "构造函数" + path);
         File file = new File(path);
         files = file.listFiles();
         context = context1;
@@ -115,14 +113,19 @@ public class convert extends Service implements Runnable {
 
     void convertImg(File[] listImg) {
         boolean is = false;
+        boolean have = false;
         KLog.d("开始转换");
         for (File fa : listImg) {
 
             KLog.d("相片名字是:" + fa.getName());
 
-            //String p=fa.getName();
-            if (!fa.getName().contains("GCJ")) {
+            if (fa.isDirectory()) {
+                continue;//下次循环
+            }
+            if (fa.getName().contains("GCJ")) {
+                have = true;
                 //已经改成GCJ
+            } else {
                 KLog.d("用equals判断相片名字是否包含[GCJ火星] :");
                 ExifInterface exif = null;
                 try {
@@ -138,7 +141,6 @@ public class convert extends Service implements Runnable {
                     lng = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
                     lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
                     //                     KLog.d(lat);
-                }
 
 
                 if (lat != null) {
@@ -161,24 +163,29 @@ public class convert extends Service implements Runnable {
 
             }
 
-
+            }
         }
         KLog.d("trueorfalse经纬度: " + is);
-                Looper.prepare();
+        Looper.prepare();
         final boolean finalIs = is;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                                     @Override
-                                                     public void run() {
-                                                         Toast.makeText(context, finalIs
-                                                                 ? count > 0
-                                                                 ? count > 10
-                                                                 ? "哇 好有趣 好像去了很多好玩的地方,已经帮你转换了" + count + "张相片了," +
-                                                                 "等一下google地图会帮你生成时光轴"
-                                                                 : "嗯嗯,已经完成了" + count + "张图片的转换,可以去google地图查看时光轴"
-                                                                 : "不好意思,没有权限在此目录下修改经纬度 还是换成内部储存的目录吧"
-                                                                 : "现在这个文件夹找不到有位置记录的照片,以后拍照可以试下记录位置,google地图会生成时间轴的", Toast.LENGTH_LONG).show();
-                                                     }
-                                                 }
+        final boolean finalHave = have;
+        new Handler(Looper.getMainLooper()).post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context,
+                                finalHave
+                                        ? finalIs
+                                                ? count > 0
+                                                        ? count > 10
+                                                                    ? "哇 好有趣 好像去了很多好玩的地方,已经帮你转换了" + count + "张相片了," + "等一下google地图会帮你生成时光轴"
+                                                                    : "嗯嗯,已经完成了" + count + "张图片的转换,可以去google地图查看时光轴"
+                                                        : "不好意思,没有权限在此目录下修改经纬度 还是换成内部储存的目录吧"
+                                                : "现在这个文件夹找不到有位置记录的照片,以后拍照可以试下记录位置,google地图会生成时间轴的"
+                                        : "帮你转了很多了 目前没找到新的照片哦", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
         );
 
 

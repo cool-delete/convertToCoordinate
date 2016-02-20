@@ -1,16 +1,24 @@
 package lovejazzie.convertToCoordinate;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -20,6 +28,7 @@ import com.socks.library.KLog;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,7 +37,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
     EditText editText;
-    public static final String TAG = "convertToCoordinate";
+    public final String TAG = "convertToCoordinate";
     private Button btnDo;
     private View view;
     private ListView listView;
@@ -37,12 +46,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String rootFile;
     private File[] nowFiles;
     private File nowFile;
+    private View mainView;
+    private boolean focused;
+    private int getCount;
+    private static SimpleAdapter adapter;
+    private lovejazzie.convertToCoordinate.bitmapUtil bitmapUtil;
+    private static List<Map<String, Object>> list;
 
+    @SuppressLint("InflateParams")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mainView = inflater.inflate(R.layout.activity_main, null);
+        setContentView(mainView);
+        focused = false;
         Intent i = new Intent(this, convert.class);
         startService(i);
         rootFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString();
@@ -54,15 +73,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         searchFile.setOnClickListener(this);
     }
 
+
     int count = 0;
 
+
     int run(File[] files) {
-        for (File file : files) {
-            if (file.isDirectory()) {
-                count++;
-                File[] files1 = file.listFiles();
-                run(files1);
+        try {
+            for (File file : files) {
+                KLog.e(file.toString());
+                if (file.isDirectory()) {
+                    count++;
+                    File[] files1 = file.listFiles();
+                    run(files1);
+                }
             }
+        } catch (NullPointerException e) {
+            e.getCause();
         }
         return count;
     }
@@ -87,10 +113,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         int run = run(list);
                         if (run != 0) {
                             count = 0;
-                            getToast("天啊 这个路径有" + run + "个文件夹");
-                            return;
+                            getToast("天啊 这个路径有" + run + "个文件夹.勉强试试");
                 }
-                        System.out.println("怎么了");
+                        lovejazzie.convertToCoordinate.bitmapUtil.isStoped = true;
+                        reViewList();
+                        nowFile = null;
+                        nowFiles = null;
+
+
                         convert convert = new convert(root, MainActivity.this);
                         new Thread(convert).start();
 
@@ -100,52 +130,88 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.btn_img:
-                getToast("....");
                 GuiList();
                 break;
             case R.id.button2:
+                setMainView();
+                reViewList();
                 break;
         }
     }
 
+    private void setMainView() {
+        setContentView(mainView);
+        editText.setText(tvDir.getText());
+        focused = false;
+        listView = null;
+    }
+
+    @SuppressLint("InflateParams")
     private void GuiList() {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (view == null) {
+
         view = inflater.inflate(R.layout.list_file, null);
+        }
         setContentView(view);
         listView = (ListView) view.findViewById(R.id.listView);
         button = (Button) view.findViewById(R.id.button2);
         tvDir = (TextView) view.findViewById(R.id.tv_dir);
         tvDir.setText(rootFile);
+        tvDir.setMovementMethod(ScrollingMovementMethod.getInstance());
         button.setOnClickListener(this);
         nowFiles = new File(rootFile).listFiles();
         listView.setOnItemClickListener(this);
         makFileList(new File(rootFile));
+        focused = true;
+
     }
 
     private void makFileList(File filePath) {
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        list = new ArrayList<Map<String, Object>>();
         File[] files = filePath.listFiles();
         Map<String, Object> item1 = new HashMap<String, Object>();
         item1.put("fileName", "上一层文件夹");
         list.add(item1);
-        KLog.d(Arrays.toString(files));
+        List<File> image = new ArrayList<File>();
         for (File file : files) {
             Map<String, Object> item = new HashMap<String, Object>();
             if (file.isDirectory()) {
                 item.put("icon", R.drawable.folder);
+            } else if (file.getName().contains("JPG") || file.getName().contains(".jpg")) {
+
+                item.put("icon", R.drawable.file);
+                image.add(file);
             } else {
                 item.put("icon", R.drawable.file);
             }
+
+
             item.put("fileName", file.getName());
             list.add(item);
         }
-        SimpleAdapter adapter = new SimpleAdapter(this, list,
+        adapter = new SimpleAdapter(this, list,
                 R.layout.line,
                 new String[]{"fileName", "icon"},
                 new int[]{R.id.tv_fileName, R.id.imageView});
+        adapter.setViewBinder(new SimpleAdapter.ViewBinder() {
+            @Override
+            public boolean setViewValue(View view, Object data, String textRepresentation) {
+                if (view instanceof ImageView & data instanceof Bitmap) {
+                    ((ImageView) view).setImageBitmap((Bitmap) data);
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
         listView.setAdapter(adapter);
         nowFiles = filePath.listFiles();
         nowFile = filePath;
+        if (image.size() > 0) {
+            upDataAdapter(image);
+        }
         try {
             tvDir.setText(filePath.getCanonicalPath());
         } catch (IOException e) {
@@ -153,10 +219,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void upDataAdapter(List<File> list) {
+        handle = new myHandle(this);
+        lovejazzie.convertToCoordinate.bitmapUtil.isStoped = false;
+        bitmapUtil = new bitmapUtil(list, handle);
+        new Thread(bitmapUtil).start();
+        bitmapUtil = null;
+    }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
+            reViewList();
             upFile();
         } else {
             KLog.d(position);
@@ -175,14 +250,90 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void reViewList() {
+        lovejazzie.convertToCoordinate.bitmapUtil.isStoped = true;
+        list = null;
+        adapter.notifyDataSetChanged();
+        adapter = null;
+    }
+
     private void upFile() {
-        String parent = nowFile.getParent();
-        makFileList(new File(parent));
+        String parent = nowFile.getName();
         KLog.d(parent);
+        if (parent.equals("")) {
+            getToast("真会玩 已经上天花板啦!");
+            return;
+        }
+
+        makFileList(nowFile.getParentFile());
     }
 
     private void getToast(String say) {
         Toast.makeText(this, say, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+        if (keyCode == 4) {
+            if (focused) {
+                setMainView();
+                KLog.d("view不活跃");
+                return true;
+            }
+        }
+        KLog.d("view活跃");
+        return super.onKeyUp(keyCode, event);
+    }
+
+
+    private myHandle handle;
+
+
+    public myHandle getHandle() {
+
+        return handle;
+    }
+
+    public static class myHandle extends Handler {
+        private final WeakReference<MainActivity> mainActivityWeakReference;
+
+        private myHandle(MainActivity mainActivityWeakReference) {
+            this.mainActivityWeakReference = new WeakReference<MainActivity>(mainActivityWeakReference);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle bundle = msg.getData();
+            Bitmap bitmap = bundle.getParcelable("bitmap");
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("icon", bitmap);
+            String s = bundle.getString("name");
+            data.put("fileName", s);
+            if (!lovejazzie.convertToCoordinate.bitmapUtil.isStoped) {
+                list.set(getInt(list, s), data);
+                adapter.notifyDataSetChanged();
+            }
+        }
+
+        private int getInt(List list, String s) {
+            boolean equals = false;
+            int loc = 0;
+            for (int i = 0; i < list.size(); i++) {
+
+                Object o = list.get(i);
+                if (o instanceof Map) {
+                    Object fileName = ((Map) o).get("fileName");
+                    if (fileName instanceof String) {
+                        equals = fileName.equals(s);
+                        if (equals) {
+                            loc = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            return loc;
+        }
+    }
 }
+

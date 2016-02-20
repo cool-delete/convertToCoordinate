@@ -16,6 +16,9 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/目录"
+            android:singleLine="false"
+            android:maxLines="2"
+            android:scrollbars="vertical"
             android:id="@+id/tv_dir"/>
 
         <Button

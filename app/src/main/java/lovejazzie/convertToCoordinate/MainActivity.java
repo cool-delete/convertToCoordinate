@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (run != 0) {
                             count = 0;
                             getToast("天啊 这个路径有" + run + "个文件夹.勉强试试");
-                }
+                }//手贱了 修复完成?
                         lovejazzie.convertToCoordinate.bitmapUtil.isStoped = true;
                         reViewList();
                         nowFile = null;

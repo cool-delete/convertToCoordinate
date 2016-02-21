@@ -82,5 +82,6 @@ public class bitmapUtil implements Runnable {
         }
         isStoped = false;
     }
-
 }
+
+

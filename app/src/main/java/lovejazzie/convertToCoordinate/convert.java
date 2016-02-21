@@ -47,7 +47,7 @@ public class convert extends Service implements Runnable {
     private File[] files;
     private Uri data;
     private Intent intentFile;
-    private static int cout = 0;
+    public static int cout = 0;
 
     public convert(String path, Context context1) {//主窗口传回来
         //path是文件夹l
@@ -319,8 +319,9 @@ public class convert extends Service implements Runnable {
 
     @Override
     public void run() {
+
         convert.cout++;
-        if (cout < 2) {
+        if (convert.cout < 2) {
 
             if (intentFile != null) {
                 String analyzed = analyze();//一个文件
@@ -330,14 +331,13 @@ public class convert extends Service implements Runnable {
                 }
             }
             if (files != null) {
-
                 convertImg(files);
             }
 
             //        convert = null;
-            count = 0;
-            files = null;
         }
+        convert.cout=0;
+        files = null;
     }
 
     @Nullable

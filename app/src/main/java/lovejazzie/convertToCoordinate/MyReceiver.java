@@ -47,6 +47,7 @@ public class MyReceiver extends BroadcastReceiver //implements Thread.UncaughtEx
 //
 //        }
 //        System.out.println("宇宙大爆炸 重新计时 次数 "+i);
+        convert.cout = 0;
         new Thread(getconvet).start();
 //getconvet.run();
     }

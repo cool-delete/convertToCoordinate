@@ -121,8 +121,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         nowFiles = null;
 
 
-                        convert convert = new convert(root, MainActivity.this);
-                        new Thread(convert).start();
+                        convert myConvert = new convert(root, MainActivity.this);
+                        convert.cout = 0;
+                        new Thread(myConvert).start();
 
                     }
                 } else {
@@ -252,9 +253,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void reViewList() {
         lovejazzie.convertToCoordinate.bitmapUtil.isStoped = true;
-        list = null;
-        adapter.notifyDataSetChanged();
-        adapter = null;
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+            list = null;
+            adapter = null;
+        }
     }
 
     private void upFile() {

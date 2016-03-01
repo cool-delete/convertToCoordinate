@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.socks.library.KLog;
+//import com.socks.library.KLog;
 
 public class MyReceiver extends BroadcastReceiver //implements Thread.UncaughtExceptionHandler
  {
@@ -14,6 +14,7 @@ public class MyReceiver extends BroadcastReceiver //implements Thread.UncaughtEx
 
     @Override
     public void onReceive(Context context, Intent intent) {
+//        KLog.init(BuildConfig.LOG_DEBUG);
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
         // throw new UnsupportedOperationException("Not yet implemented");
@@ -38,7 +39,7 @@ public class MyReceiver extends BroadcastReceiver //implements Thread.UncaughtEx
 //        intent1.putExtra("path",cursorString);
 //        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //        context.startActivity(intent1);
-        KLog.d(intent.getAction());
+//        KLog.d(intent.getAction());
         convert getconvet = new convert(intent, context);
 //        if (null == getconvet){
 //            System.out.println("没有了");

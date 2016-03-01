@@ -4,6 +4,11 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
 
     <application
         android:allowBackup="true"
@@ -18,12 +23,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-<service android:name=".convert"
-    android:enabled="true"
-         android:process=":ture"
-    android:exported="false">
 
-</service>
+        <service
+            android:name=".convert"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":ture">
+        </service>
+
         <receiver
             android:name=".MyReceiver"
             android:enabled="true"
@@ -31,9 +38,18 @@
             <intent-filter>
                 <action android:name="android.hardware.action.NEW_PICTURE"/>
                 <action android:name="com.android.camera.NEW_PICTURE"/>
+
                 <data android:mimeType="image/*" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".MapActivity">
+        </activity>
+
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="Rpxkb6YB87h9zN8EYTrzgIcf"/>
     </application>
 
 </manifest>

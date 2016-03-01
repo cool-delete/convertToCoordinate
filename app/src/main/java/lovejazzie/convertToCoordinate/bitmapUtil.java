@@ -6,10 +6,10 @@ import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Message;
 
-import com.socks.library.KLog;
-
 import java.io.File;
 import java.util.List;
+
+//import com.socks.library.KLog;
 
 /**
  * Created by Administrator on 2016/2/20.
@@ -24,10 +24,10 @@ public class bitmapUtil implements Runnable {
     public bitmapUtil(List<File> files, MainActivity.myHandle myHandle) {
         this.files = files;
         this.handle = myHandle;
-        KLog.e("新建对象");
+        //        KLog.e("新建对象");
     }
 
-    public Bitmap getBitmap(File filePath, int width, int height) {
+    public static Bitmap getBitmap(File filePath, int width, int height) {
         Bitmap bitmap = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -66,11 +66,15 @@ public class bitmapUtil implements Runnable {
     public void run() {
         if (isStoped)
             return;
+        int i = 1;
         File[] files = this.files.toArray(new File[this.files.size()]);
         for (File file : files) {
             //            bitmaps[i] = getBitmap(file, 100, 100);
             if (isStoped)
                 return;
+            i++;
+
+
             Bundle bundle = new Bundle();
             Bitmap bitmap = getBitmap(file, 100, 100);
             bundle.putParcelable("bitmap", bitmap);
@@ -78,7 +82,6 @@ public class bitmapUtil implements Runnable {
             Message message = Message.obtain();
             message.setData(bundle);
             handle.sendMessage(message);
-
         }
         isStoped = false;
     }

@@ -24,16 +24,15 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.socks.library.KLog;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+//import com.socks.library.//KLog;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
     EditText editText;
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int run(File[] files) {
         try {
             for (File file : files) {
-                KLog.e(file.toString());
+                ////KLog.e(file.toString());
                 if (file.isDirectory()) {
                     count++;
                     File[] files1 = file.listFiles();
@@ -190,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             item.put("fileName", file.getName());
             list.add(item);
-        }
+        }//// TODO: 2016/2/24 下面的simpleAdapter好像有问题 系统会打印e级别的消息 uir错误
         adapter = new SimpleAdapter(this, list,
                 R.layout.line,
                 new String[]{"fileName", "icon"},
@@ -235,11 +234,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             reViewList();
             upFile();
         } else {
-            KLog.d(position);
+            //KLog.d(position);
             nowFile = nowFiles[position-1];//list比file数多1,此处减去
             if (nowFile.listFiles() == null) {
                 getToast("确定是当前文件夹吗");
-                KLog.d(Arrays.toString(nowFile.listFiles()));
+                //KLog.d(Arrays.toString(nowFile.listFiles()));
                 nowFile = nowFile.getParentFile();
             }
 //            if (nowFile.listFiles().length == 0) {
@@ -262,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void upFile() {
         String parent = nowFile.getName();
-        KLog.d(parent);
+        //KLog.d(parent);
         if (parent.equals("")) {
             getToast("真会玩 已经上天花板啦!");
             return;
@@ -280,11 +279,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (keyCode == 4) {
             if (focused) {
                 setMainView();
-                KLog.d("view不活跃");
+                //KLog.d("view不活跃");
                 return true;
             }
         }
-        KLog.d("view活跃");
+        //KLog.d("view活跃");
         return super.onKeyUp(keyCode, event);
     }
 

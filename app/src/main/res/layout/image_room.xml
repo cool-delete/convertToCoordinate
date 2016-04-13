@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_room"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@drawable/layout_br"
-    android:orientation="vertical"
-    android:paddingTop="3dp"
-    android:paddingStart="3dp"
-    android:paddingEnd="3dp"
-    android:paddingBottom="5dp"
+    style="@style/mm"
     >
 
     <ImageView
-        android:layout_gravity="center"
-        android:id="@+id/imagelayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        style="@style/mm"
+        android:scaleType="centerCrop"
+        android:src="@drawable/layout_br1" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/imagelayout"
+        style="@style/ww"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:scaleType="center" />
+
+
+</FrameLayout>

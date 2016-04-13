@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 manifest
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:2:1-55:12
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:2:1-60:12
 	package
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:2:11-51
 		INJECTED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml
@@ -38,8 +38,11 @@ ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManif
 	android:name
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:10:22-73
 application
-ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:13:5-53:19
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:13:5-58:19
 MERGED from [com.android.support:appcompat-v7:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.gms:play-services-appindexing:8.1.0] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\8.1.0\AndroidManifest.xml:19:5-20
+MERGED from [com.google.android.gms:play-services-basement:8.1.0] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.1.0\AndroidManifest.xml:20:5-24:19
 MERGED from [com.android.support:support-v4:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\AndroidManifest.xml:22:5-20
 	android:label
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:16:9-41
@@ -48,7 +51,7 @@ MERGED from [com.android.support:support-v4:23.0.1] E:\Android\TextProjects\conv
 	android:allowBackup
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:14:9-35
 	android:icon
-		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:15:9-43
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:15:9-37
 	android:theme
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:18:9-40
 activity#lovejazzie.convertToCoordinate.MainActivity
@@ -107,9 +110,19 @@ ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManif
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:52:13-53
 	android:name
 		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:51:13-52
+meta-data#com.google.android.gms.version
+ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:55:9-57:69
+MERGED from [com.google.android.gms:play-services-basement:8.1.0] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.1.0\AndroidManifest.xml:21:9-23:69
+	android:value
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:57:13-66
+	android:name
+		ADDED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml:56:13-58
 uses-sdk
 INJECTED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 MERGED from [com.android.support:appcompat-v7:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\AndroidManifest.xml:20:5-43
+MERGED from [com.google.android.gms:play-services-appindexing:8.1.0] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\8.1.0\AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-basement:8.1.0] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.1.0\AndroidManifest.xml:18:5-42
 MERGED from [com.android.support:support-v4:23.0.1] E:\Android\TextProjects\convertToCoordinate\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\AndroidManifest.xml:20:5-43
 	android:targetSdkVersion
 		INJECTED from E:\Android\TextProjects\convertToCoordinate\app\src\main\AndroidManifest.xml

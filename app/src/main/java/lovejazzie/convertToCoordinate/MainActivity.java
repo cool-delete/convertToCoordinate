@@ -37,10 +37,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
     EditText editText;
     public final String TAG = "convertToCoordinate";
-    private Button btnDo;
     private View view;
     private ListView listView;
-    private Button button;
     private TextView tvDir;
     private String rootFile;
     private File[] nowFiles;
@@ -49,8 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean focused;
     private int getCount;
     private static SimpleAdapter adapter;
-    private lovejazzie.convertToCoordinate.bitmapUtil bitmapUtil;
     private static List<Map<String, Object>> list;
+    private static List<Bitmap> lmageRoom = new ArrayList<>();
+    private static String root;
+
 
     @SuppressLint("InflateParams")
     @Override
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rootFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString();
         editText = (EditText) findViewById(R.id.editText2);
         editText.setText(rootFile);
-        btnDo = (Button) findViewById(R.id.button3);
+        Button btnDo = (Button) findViewById(R.id.button3);
         btnDo.setOnClickListener(this);
         ImageButton searchFile = (ImageButton) findViewById(R.id.btn_img);
         searchFile.setOnClickListener(this);
@@ -74,59 +74,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     int count = 0;
+    int imageCount = 0;
+
+    public static List<Bitmap> getLmageRoom() {
+        return lmageRoom;
+    }
+
+    private void Run(final File[] files) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sumCount(files);
+                handle.sendEmptyMessage(count);
+
+            }
+        }).start();
 
 
-    int run(File[] files) {
+    }
+
+    private int sumCount(File[] files1) {
         try {
-            for (File file : files) {
+            for (File file : files1) {
                 ////KLog.e(file.toString());
                 if (file.isDirectory()) {
                     count++;
-                    File[] files1 = file.listFiles();
-                    run(files1);
+                    File[] files = file.listFiles();
+                    sumCount(files);
+                } else if (file.getName().endsWith("JPG") | file.getName().endsWith("JPEG")) {
+                    imageCount++;
+                }
+                if (count > 50) {
+                    return 0;
                 }
             }
         } catch (NullPointerException e) {
             e.getCause();
         }
-        return count;
+        return 0;
     }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button3:
 
-                String root = editText.getText().toString();
+                root = editText.getText().toString();
                 File r = new File(root);
                 if (r.isDirectory()) {
                     File[] list = r.listFiles();
 
                     if (list == null) {
-                        getToast("亲~..好像这个不是文件夹吧,我要文件夹哦");
+                        showToast("亲~..好像这个不是文件夹吧,我要文件夹哦");
 
                     } else if (0 == list.length) {
-                        getToast("诶多.里面找不到文件诶 要不确认一下路径?");
+                        showToast("请换另一个文件夹");
 
                     } else {
-                        int run = run(list);
-                        if (run != 0) {
-                            count = 0;
-                            getToast("天啊 这个路径有" + run + "个文件夹.勉强试试");
-                }//手贱了 修复完成?
-                        lovejazzie.convertToCoordinate.bitmapUtil.isStoped = true;
-                        reViewList();
-                        nowFile = null;
-                        nowFiles = null;
-
-
-                        convert myConvert = new convert(root, MainActivity.this);
-                        convert.cout = 0;
-                        new Thread(myConvert).start();
+                        if (root.equals("/")) {
+                            showToast("不接受根目录");
+                            return;
+                        }
+                        showToast("请稍等");
+                        getHandle();
+                        Run(list);
 
                     }
                 } else {
-                    getToast("亲~..好像这个不是文件夹吧,我要文件夹哦");
+                    showToast("亲~..好像这个不是文件夹吧,我要文件夹哦");
                 }
                 break;
             case R.id.btn_img:
@@ -139,6 +155,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void allOk(String root, int run) {
+        if (run != 0) {
+            count = 0;
+            if (imageCount == 0) {
+                showToast(run + "个文件夹下都没有图片,请换目录");
+                return;
+            }/**
+             如果传入根目录,会在N次递归后扫描出图片文件 但是在子线程只能执行扫描第一层*/
+        }//手贱了 修复完成?
+        bitmapUtil.isStoped = true;
+        reViewList();
+        nowFile = null;
+        nowFiles = null;
+
+
+        convert myConvert = new convert(root, MainActivity.this);
+        convert.cout = 0;
+        new Thread(myConvert).start();
+    }
+
     private void setMainView() {
         setContentView(mainView);
         editText.setText(tvDir.getText());
@@ -146,16 +182,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listView = null;
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (handle == null) {
+            return;
+        }
+        handle.removeCallbacksAndMessages(null);
+    }
+
     @SuppressLint("InflateParams")
     private void GuiList() {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (view == null) {
 
-        view = inflater.inflate(R.layout.list_file, null);
+            view = inflater.inflate(R.layout.list_file, null);
         }
         setContentView(view);
         listView = (ListView) view.findViewById(R.id.listView);
-        button = (Button) view.findViewById(R.id.button2);
+        Button button = (Button) view.findViewById(R.id.button2);
         tvDir = (TextView) view.findViewById(R.id.tv_dir);
         tvDir.setText(rootFile);
         tvDir.setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -168,20 +213,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void makFileList(File filePath) {
-        list = new ArrayList<Map<String, Object>>();
+        list = new ArrayList<>();
         File[] files = filePath.listFiles();
-        Map<String, Object> item1 = new HashMap<String, Object>();
+        Map<String, Object> item1 = new HashMap<>();
         item1.put("fileName", "上一层文件夹");
         list.add(item1);
-        List<File> image = new ArrayList<File>();
+        List<String> image = new ArrayList<>();
         for (File file : files) {
-            Map<String, Object> item = new HashMap<String, Object>();
+            Map<String, Object> item = new HashMap<>();
             if (file.isDirectory()) {
                 item.put("icon", R.drawable.folder);
             } else if (file.getName().contains("JPG") || file.getName().contains(".jpg")) {
 
                 item.put("icon", R.drawable.file);
-                image.add(file);
+                image.add(file.getPath());
             } else {
                 item.put("icon", R.drawable.file);
             }
@@ -219,12 +264,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void upDataAdapter(List<File> list) {
+    private void upDataAdapter(List<String> list) {
         handle = new myHandle(this);
         lovejazzie.convertToCoordinate.bitmapUtil.isStoped = false;
-        bitmapUtil = new bitmapUtil(list, handle);
+        bitmapUtil<myHandle> bitmapUtil = new bitmapUtil<>(list, handle);
         new Thread(bitmapUtil).start();
-        bitmapUtil = null;
     }
 
 
@@ -235,14 +279,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             upFile();
         } else {
             //KLog.d(position);
-            nowFile = nowFiles[position-1];//list比file数多1,此处减去
+            nowFile = nowFiles[position - 1];//list比file数多1,此处减去
             if (nowFile.listFiles() == null) {
-                getToast("确定是当前文件夹吗");
+                showToast("确定是当前文件夹吗");
                 //KLog.d(Arrays.toString(nowFile.listFiles()));
                 nowFile = nowFile.getParentFile();
             }
 //            if (nowFile.listFiles().length == 0) {
-//                getToast("里面是空文件哦");
+//                showToast("里面是空文件哦");
 //            }
             else {
                 makFileList(nowFile);
@@ -263,14 +307,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String parent = nowFile.getName();
         //KLog.d(parent);
         if (parent.equals("")) {
-            getToast("真会玩 已经上天花板啦!");
+            showToast("真会玩 已经上天花板啦!");
             return;
         }
 
         makFileList(nowFile.getParentFile());
     }
 
-    private void getToast(String say) {
+    private void showToast(String say) {
         Toast.makeText(this, say, Toast.LENGTH_SHORT).show();
     }
 
@@ -293,32 +337,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public myHandle getHandle() {
 
-        return handle;
+        return handle = new myHandle(this);
     }
 
     public static class myHandle extends Handler {
         private final WeakReference<MainActivity> mainActivityWeakReference;
 
         private myHandle(MainActivity mainActivityWeakReference) {
-            this.mainActivityWeakReference = new WeakReference<MainActivity>(mainActivityWeakReference);
+            this.mainActivityWeakReference = new WeakReference<>(mainActivityWeakReference);
         }
 
         @Override
         public void handleMessage(Message msg) {
+            MainActivity mainActivity = mainActivityWeakReference.get();
+            if ((mainActivity == null)) {
+                return;
+            }
+            if (msg.what != 0 || mainActivity.imageCount != 0) {
+                if (msg.what < 50) {
+                    mainActivity.allOk(root, msg.what);
+                } else mainActivity.showToast("子文件夹太多了");
+                mainActivity.imageCount = mainActivity.count = 0;
+                return;
+            }
             Bundle bundle = msg.getData();
             Bitmap bitmap = bundle.getParcelable("bitmap");
-            Map<String, Object> data = new HashMap<String, Object>();
+            Map<String, Object> data = new HashMap<>();
+
             data.put("icon", bitmap);
-            String s = bundle.getString("name");
-            data.put("fileName", s);
-            if (!lovejazzie.convertToCoordinate.bitmapUtil.isStoped) {
-                list.set(getInt(list, s), data);
+            File s = new File(bundle.getString("name", null));
+            lmageRoom.add(bitmap);
+            data.put("fileName", s.getName());
+            if (!bitmapUtil.isStoped) {
+                list.set(get_index(list, s.getPath()), data);
                 adapter.notifyDataSetChanged();
             }
         }
 
-        private int getInt(List list, String s) {
-            boolean equals = false;
+        private int get_index(List list, String s) {
+            boolean equals;
             int loc = 0;
             for (int i = 0; i < list.size(); i++) {
 
@@ -326,7 +383,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (o instanceof Map) {
                     Object fileName = ((Map) o).get("fileName");
                     if (fileName instanceof String) {
-                        equals = fileName.equals(s);
+                        System.out.println(fileName + "文件名");
+                        equals = new File(s).getName().equals(fileName);
                         if (equals) {
                             loc = i;
                             break;
@@ -337,5 +395,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return loc;
         }
     }
+
 }
 

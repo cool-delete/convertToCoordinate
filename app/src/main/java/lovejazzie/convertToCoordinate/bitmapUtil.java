@@ -14,18 +14,19 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/2/20.
  */
-public class bitmapUtil implements Runnable {
+public class bitmapUtil<Handle extends android.os.Handler> implements Runnable {
 
-    private final List<File> files;
-    private final MainActivity.myHandle handle;
+    private final List<String> files;
+    private Handle handle = null;
     private Bitmap[] bitmaps;
     public static boolean isStoped = false;
 
-    public bitmapUtil(List<File> files, MainActivity.myHandle myHandle) {
+    public bitmapUtil(List<String> files, Handle myHandle) {
         this.files = files;
         this.handle = myHandle;
         //        KLog.e("新建对象");
     }
+
 
     public static Bitmap getBitmap(File filePath, int width, int height) {
         Bitmap bitmap = null;
@@ -64,26 +65,28 @@ public class bitmapUtil implements Runnable {
 
     @Override
     public void run() {
-        if (isStoped)
-            return;
-        int i = 1;
-        File[] files = this.files.toArray(new File[this.files.size()]);
-        for (File file : files) {
-            //            bitmaps[i] = getBitmap(file, 100, 100);
+        synchronized (this) {
             if (isStoped)
                 return;
-            i++;
-
+            int i = 1;
 
             Bundle bundle = new Bundle();
-            Bitmap bitmap = getBitmap(file, 100, 100);
-            bundle.putParcelable("bitmap", bitmap);
-            bundle.putString("name", file.getName());
-            Message message = Message.obtain();
-            message.setData(bundle);
-            handle.sendMessage(message);
+            for (String file : files) {
+                //            bitmaps[i] = getBitmap(file, 100, 100);
+                if (isStoped)
+                    return;
+                i++;
+
+                Bitmap bitmap = getBitmap(new File(file), 100, 100);
+                bundle.putParcelable("bitmap", bitmap);
+                bundle.putString("name", file);
+                Message message = Message.obtain();
+                message.setData(bundle);
+                handle.sendMessage(message);
+            }
+            isStoped = false;
         }
-        isStoped = false;
+
     }
 }
 

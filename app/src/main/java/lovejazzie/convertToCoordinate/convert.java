@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -36,8 +37,6 @@ import java.util.regex.Pattern;
 public class convert extends Service implements Runnable {
 
     private double pi = 3.14159265358979324;
-    private double a = 6378245.0;
-    private double ee = 0.00669342162296594323;
     private int count;
 
     public void setContext(Context context) {
@@ -57,7 +56,8 @@ public class convert extends Service implements Runnable {
     private Uri data;
     private Intent intentFile;
     public static int cout = 0;
-    public List<Map<String, file>> image = new ArrayList<Map<String, file>>();
+    public List<Map<String, file>> image = new ArrayList<>();
+
     public convert(String path, Context context1) {//主窗口传回来
         //path是文件夹l
         File file = new File(path);
@@ -109,6 +109,8 @@ public class convert extends Service implements Runnable {
         String[] strings = {MediaStore.Images.Media.DATA};
         //KLog.d("默认数组" + Arrays.toString(strings));
         Cursor cursor = context.getContentResolver().query(data, strings, null, null, null);
+        if (cursor == null)
+            return null;
         if (cursor.moveToFirst()) {
             double columnIndexOrThrow = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             String cursorString = cursor.getString((int) columnIndexOrThrow);
@@ -121,8 +123,9 @@ public class convert extends Service implements Runnable {
 
 
     void convertImg(File[] listImg) {
-        boolean is = false;
+        boolean hava_lat = false;
         boolean have = false;
+        boolean AllDirectory = false;
         //KLog.d("开始转换");
         for (File fa : listImg) {
 
@@ -133,10 +136,12 @@ public class convert extends Service implements Runnable {
             }
             if (fa.getName().contains("GCJ")) {
                 have = true;
+                AllDirectory = true;
                 getlatlng(fa.getPath());//
                 //已经改成GCJ
             } else {
                 //KLog.d("用equals判断相片名字是否包含[GCJ火星] :");
+                AllDirectory = true;
                 ExifInterface exif = null;
                 try {
                     exif = new ExifInterface(fa.getPath());
@@ -144,8 +149,8 @@ public class convert extends Service implements Runnable {
                     e.printStackTrace();
                 }
 
-                String lat = null;
-                String lng = null;
+                String lat;
+                String lng;
                 //KLog.d("打印看看" + exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
                 if (exif != null) {
                     lng = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
@@ -153,83 +158,86 @@ public class convert extends Service implements Runnable {
                     //                     //KLog.d(lat);
 
 
-                if (lat != null) {
-                    is = true;//有纬度
-                    try {
-                        count = 0;
-                        boolean b = imgConvertToGCJ(fa, lat, lng, exif);
-                        if (b)
-                            count++;//能改
-                        //MediaStore.Images.Media.insertImage(getContentResolver(), fa.getPath(),
-                        // "GCJ-" + fa.getName(), null);
-                        //sendBroadcast(
-                        // new Intent(Intent.ACTION_MEDIA_MOUNTED,
-                        // Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+                    if (lat != null) {
+                        hava_lat = true;//有纬度
+                        try {
+                            count = 0;
+                            boolean b = imgConvertToGCJ(fa, lat, lng, exif);
+                            if (b)
+                                count++;//能改
+                            //MediaStore.Images.Media.insertImage(getContentResolver(), fa.getPath(),
+                            // "GCJ-" + fa.getName(), null);
+                            //sendBroadcast(
+                            // new Intent(Intent.ACTION_MEDIA_MOUNTED,
+                            // Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-            }
+                }
 
             }
         }
         //KLog.d("trueorfalse经纬度: " + is);
         //        Looper.prepare();
-        final boolean finalIs = is;
+        final boolean havaLat = hava_lat;
         final boolean finalHave = have;
         Handler handler = new Handler(Looper.getMainLooper());
+        final boolean finalAllDirectory = AllDirectory;
         handler.post(
                 new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(context,
-                                finalHave
-                                        ? finalIs
-                                        ? count > 0
-                                        ? count > 10
-                                        ? "哇 好有趣 好像去了很多好玩的地方,已经帮你转换了" + count + "张相片了," + "等一下google地图会帮你生成时光轴"
-                                        : "嗯嗯,已经完成了" + count + "张图片的转换,可以去google地图查看时光轴"
-                                        : "不好意思,没有权限在此目录下修改经纬度 还是换成内部储存的目录吧"
-                                        : "现在这个文件夹找不到有位置记录的照片,以后拍照可以试下记录位置,google地图会生成时间轴的"
-                                        : "帮你转了很多了 目前没找到新的照片哦", Toast.LENGTH_LONG)
+                                finalAllDirectory//不全是文件夹
+                                        ?finalHave
+                                            ?havaLat
+                                                ?count > 0
+                                                    ?count > 10
+                                                        ? "真会玩, 好像去了很多好玩的地方,已经帮你转换了" + count + "张相片了,"
+                                                        : "已经完成了" + count + "张图片的转换,现在显示"
+                                                    :"没有权限在此目录下修改经纬度 还是换成内部储存的目录吧"
+                                                :"目前没找到新的照片哦"
+                                            :havaLat
+                                                        ?"帮你记录了经纬度 可以在地图查看"
+                                                        :"这个文件夹找不到有位置记录的照片,以后拍照可以试下记录位置"
+                                        :"离带图片的文件夹太远了", Toast.LENGTH_LONG)
                                 .show();
                     }
                 }
         );
 
         //handler.getLooper().quit();
-        //        Looper.loop();
-
+        /**
+         //        Looper.loop();//后续步骤走不下去
+         */
     }
 
     private void getlatlng(String name) {
-        String pattern = "#\\w*\\[(\\d*\\.\\d*),(\\d*\\.\\d*)\\].*\\.\\w*";
-        Pattern compile = Pattern.compile(pattern);
-        Matcher matcher = compile.matcher(name);
-        if (matcher.find()) {
-
-            String lng = matcher.group(2);
-            String lat = matcher.group(1);
 
 
-            file myfile = new file(name);
-            myfile.setLat(Double.parseDouble(lat));
-            myfile.setLng(Double.parseDouble(lng));
+        file myfile = new file(name);
 
-            Map<String, file> imageLoc = new HashMap<String, file>();
-            String KeyName = "imageName";
+//            System.out.println("文件信息是"+myfile.toString());
 
-            imageLoc.put(KeyName, myfile);
-            image.add(imageLoc);
-        }
+        Map<String, file> imageLoc = new HashMap<>();
+        String KeyName = "imageName";
+
+        imageLoc.put(KeyName, myfile);
+        image.add(imageLoc);
+
     }
 
     public static class file implements Parcelable {
         String fileName;
         double lat;
         double lng;
+        Bitmap bitmap;
+        private String pattern = ".*#\\w*\\[(\\d*\\.\\d*),(\\d*\\.\\d*)\\].*\\.\\w*";
+        Pattern compile = Pattern.compile(pattern);
+
 
         public LatLng getLatLng() {
             CoordinateConverter m = new CoordinateConverter();
@@ -245,6 +253,7 @@ public class convert extends Service implements Runnable {
             lat = in.readDouble();
             lng = in.readDouble();
             fileName = in.readString();
+//            bitmap = in.readParcelable(Bitmap.class.getClassLoader());
         }
 
         public static final Creator<file> CREATOR = new Creator<file>() {
@@ -272,7 +281,6 @@ public class convert extends Service implements Runnable {
         }
 
 
-
         public void setLat(double lat) {
             this.lat = lat;
         }
@@ -282,7 +290,18 @@ public class convert extends Service implements Runnable {
         }
 
         public file(String filePath) {
+
+
+            Matcher matcher = compile.matcher(filePath);
+            boolean b = matcher.find();
+            if (!b)
+                return;
+            String lng = matcher.group(2);
+            String lat = matcher.group(1);
+            this.setLat(Double.parseDouble(lat));
+            this.setLng(Double.parseDouble(lng));
             this.fileName = filePath;
+//            bitmap = bitmapUtil.getBitmap(new File(filePath), 80, 80);
         }
 
         @Override
@@ -295,16 +314,17 @@ public class convert extends Service implements Runnable {
             dest.writeDouble(lat);
             dest.writeDouble(lng);
             dest.writeString(fileName);
+//            dest.writeParcelable(bitmap,1);
         }
     }
 
     private boolean imgConvertToGCJ(File fa, String lat, String lng, ExifInterface exif) throws IOException {
-        boolean b = false;
+        boolean b;
         //KLog.d("对比文件名 如果已经修改 就忽略" +  fa.getPath().contains("GCJ"));
         //命名随随机化
         String old_path = fa.getParentFile() + "/" + fa.getName();
         String new_path = fa.getParentFile() + "/" + "#GCJ"
-                + "[" + convertToDouble(lat) + "," + convertToDouble(lng) + "]" + System.currentTimeMillis()+".JPG";
+                + "[" + convertToDouble(lat) + "," + convertToDouble(lng) + "]" + System.currentTimeMillis() + ".JPG";
         String ss = convertToDouble(lat) + "纬度"
                 + convertToDouble(lng) + "经度";
         double loc[] = transform(convertToDouble(lat), convertToDouble(lng));
@@ -328,25 +348,27 @@ public class convert extends Service implements Runnable {
             contentValues.put(MediaStore.Images.Media.LONGITUDE, loc[1]);
             contentValues.put(MediaStore.Images.Media.LATITUDE, loc[0]);
 
-            contentValues.put(MediaStore.Images.Media.DATA,  new_path);//miui系统数据库设定data是主键 不可更换?
+            contentValues.put(MediaStore.Images.Media.DATA, new_path);//miui系统数据库设定data是主键 不可更换?
             if (b) {
                 if (data == null) {
                     data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                     Cursor query = context.getContentResolver().query(data, new String[]{MediaStore.Images.Media._ID},
                             MediaStore.Images.Media.DATA + "=?", new String[]{fa.getPath()}, null);
-                    query.moveToFirst();
+                    if (query != null) {
+                        query.moveToFirst();
                     String idString = query.getString(query.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
                     data = Uri.parse("content://media/external/images/media/" + idString);
                     query.close();
+                    }
 
                     //KLog.d("目前图片名字是:" + fa.getName());
-            }
+                }
                 context.getContentResolver().update(data, contentValues, null, null);
             }
             data = null;
             return b;
         }
-        return b;
+        return false;
     }
     //double[] transform = transform(23.125601, 113.365145);
     // //KLog.d(transform[0]+"纬度"+transform[1]+"经度");
@@ -377,7 +399,6 @@ public class convert extends Service implements Runnable {
     }
 
     private String convertTOString(double d) {
-
         d = Math.abs(d);
         String dms = Location.convert(d, Location.FORMAT_SECONDS);
         String[] splits = dms.split(":");
@@ -397,8 +418,10 @@ public class convert extends Service implements Runnable {
         double dLon = transformLon(wgLon - 105.0, wgLat - 35.0);
         double radLat = wgLat / 180.0 * pi;
         double magic = Math.sin(radLat);
+        double ee = 0.00669342162296594323;
         magic = 1 - ee * magic * magic;
         double sqrtMagic = Math.sqrt(magic);
+        double a = 6378245.0;
         dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * pi);
         dLon = (dLon * 180.0) / (a / sqrtMagic * Math.cos(radLat) * pi);
 
@@ -431,18 +454,18 @@ public class convert extends Service implements Runnable {
                 String analyzed = analyze();//一个文件
                 if (analyzed != null) {
 
-                    convertImg(new File[]{new File(analyzed)});
+                    convertImg(new File[]{new File(analyzed)});//意图过来的
                 }
             }
             if (files != null) {
-                convertImg(files);
+                convertImg(files);//主窗口过来的
             }
 
             //        convert = null;
         }
-        convert.cout=0;
+        convert.cout = 0;
         files = null;
-        if (image.size()<=0)
+        if (image.size() <= 0)
             return;
 
         ArrayList objects = new ArrayList();
@@ -452,6 +475,9 @@ public class convert extends Service implements Runnable {
         intent.putParcelableArrayListExtra("list", objects);
         context.startActivity(intent);
         image.clear();
+        /**
+         * 超过21张缩略图intent就传递失败了
+         */
     }
 
     @Nullable

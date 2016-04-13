@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">图片GPS坐标转换</string>
+    <string name="确定">确定</string>
+    <string name="目录">当前目录：　</string>
+    <string name="文件名">文件名字</string>
+    <string name="点击按钮选择">点击按钮选择</string>
+</resources>

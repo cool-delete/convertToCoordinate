@@ -125,7 +125,7 @@ public class convert extends Service implements Runnable {
     void convertImg(File[] listImg) {
         boolean hava_lat = false;
         boolean have = false;
-        boolean AllDirectory = false;
+        boolean allFileAreDirectory = false;
         //KLog.d("开始转换");
         for (File fa : listImg) {
 
@@ -136,12 +136,12 @@ public class convert extends Service implements Runnable {
             }
             if (fa.getName().contains("GCJ")) {
                 have = true;
-                AllDirectory = true;
+                allFileAreDirectory = true;
                 getlatlng(fa.getPath());//
                 //已经改成GCJ
             } else {
                 //KLog.d("用equals判断相片名字是否包含[GCJ火星] :");
-                AllDirectory = true;
+                allFileAreDirectory = true;
                 ExifInterface exif = null;
                 try {
                     exif = new ExifInterface(fa.getPath());
@@ -185,7 +185,7 @@ public class convert extends Service implements Runnable {
         final boolean havaLat = hava_lat;
         final boolean finalHave = have;
         Handler handler = new Handler(Looper.getMainLooper());
-        final boolean finalAllDirectory = AllDirectory;
+        final boolean finalAllDirectory = allFileAreDirectory;
         handler.post(
                 new Runnable() {
                     @Override
@@ -238,6 +238,9 @@ public class convert extends Service implements Runnable {
         private String pattern = ".*#\\w*\\[(\\d*\\.\\d*),(\\d*\\.\\d*)\\].*\\.\\w*";
         Pattern compile = Pattern.compile(pattern);
 
+/**
+ * @return 从GPS坐标返回bd9II坐标系
+ */
 
         public LatLng getLatLng() {
             CoordinateConverter m = new CoordinateConverter();

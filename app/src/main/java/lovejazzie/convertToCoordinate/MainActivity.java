@@ -70,6 +70,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnDo.setOnClickListener(this);
         ImageButton searchFile = (ImageButton) findViewById(R.id.btn_img);
         searchFile.setOnClickListener(this);
+        Button check = (Button) findViewById(R.id.checkloc);
+        final Context context = getApplicationContext();
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckCoordinatesError.init(context);
+            }
+        });
+        CheckCoordinatesError.setCheckListener(new CheckCoordinatesError.checkloc() {
+            @Override
+            public boolean check(boolean a) {
+                System.out.println("是否相等"+a);
+                return a;
+            }
+        });
     }
 
 

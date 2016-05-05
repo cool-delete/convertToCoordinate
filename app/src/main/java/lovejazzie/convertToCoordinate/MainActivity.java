@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             File s = new File(bundle.getString("name", null));
             lmageRoom.add(bitmap);
             data.put("fileName", s.getName());
-            if (!bitmapUtil.isStoped) {
+            if (!bitmapUtil.isStoped && list != null) {
                 list.set(get_index(list, s.getPath()), data);
                 adapter.notifyDataSetChanged();
             }
@@ -392,7 +392,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         private int get_index(List list, String s) {
             boolean equals;
             int loc = 0;
-            for (int i = 0; i < list.size(); i++) {
+            if (list == null) {
+                System.out.println("null啦");
+            }
+            for (int i = 0; i < (list != null ? list.size() : 0); i++) {
 
                 Object o = list.get(i);
                 if (o instanceof Map) {

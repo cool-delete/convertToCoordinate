@@ -17,6 +17,8 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.CoordinateConverter;
 
 public class CheckCoordinatesError {
     private static double[] defultLoc;
@@ -47,8 +49,12 @@ public class CheckCoordinatesError {
                 @Override
                 public void onLocationChanged(Location location) {
                     defultLoc = new double[2];
-                    defultLoc[0] = location.getLatitude();
-                    defultLoc[1] = location.getLongitude();
+                    CoordinateConverter converter = new CoordinateConverter();
+                    converter.from(CoordinateConverter.CoordType.GPS);
+                    converter.coord(new LatLng(location.getLatitude(), location.getLongitude()));
+                    LatLng latLng = converter.convert();
+                    defultLoc[0] = latLng.latitude;
+                    defultLoc[1] = latLng.longitude;
 
                     locIsSame();
                 }
